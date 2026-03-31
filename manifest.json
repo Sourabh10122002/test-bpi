@@ -1,0 +1,45 @@
+{
+  "manifest_version": 3,
+  "name": "Binance Price Increaser",
+  "version": "1.0",
+  "description": "Increases/Modifies prices on Binance.com for visualization.",
+  "permissions": ["storage"],
+  "host_permissions": [
+    "*://*.binance.com/*",
+    "*://*.binance.me/*",
+    "*://*.binance.us/*",
+    "*://*.binance.info/*",
+    "*://*.bnbs.com/*",
+    "*://*.binance.cc/*",
+    "*://*.binance.net/*",
+    "*://*.binance.org/*",
+    "*://*.stake.ac/*",
+    "*://stake.ac/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Binance Price settings"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.binance.com/*",
+        "*://*.binance.me/*",
+        "*://*.binance.us/*",
+        "*://*.binance.info/*",
+        "*://*.bnbs.com/*",
+        "*://*.binance.cc/*",
+        "*://*.binance.net/*",
+        "*://*.binance.org/*",
+        "*://*.stake.ac/*",
+        "*://stake.ac/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle",
+      "all_frames": true
+    }
+  ],
+  "icons": {
+    "48": "icon48.png"
+  }
+}

@@ -1,0 +1,142 @@
+:root {
+  --bg-color: #0b0e11;
+  --card-bg: #1e2329;
+  --primary: #f0b90b;
+  --text-primary: #eaecef;
+  --text-secondary: #848e9c;
+  --input-bg: #2b3139;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  width: 320px;
+  overflow: hidden;
+}
+
+.container {
+  padding: 24px;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+}
+
+h1 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.input-group {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+input[type="number"],
+input[type="text"] {
+  width: 100%;
+  background-color: var(--input-bg);
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 14px 16px;
+  color: var(--text-primary);
+  font-size: 24px;
+  font-weight: 600;
+  outline: none;
+  transition: var(--transition);
+}
+
+input[type="number"]:focus,
+input[type="text"]:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(240, 185, 11, 0.1);
+}
+
+.suffix {
+  position: absolute;
+  right: 16px;
+  font-size: 20px;
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+
+.description {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+button {
+  width: 100%;
+  background-color: var(--primary);
+  color: #000;
+  border: none;
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+button:hover {
+  background-color: #fcd535;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(240, 185, 11, 0.2);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+footer {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #2b3139;
+  text-align: center;
+}
+
+footer p {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
