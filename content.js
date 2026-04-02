@@ -20,12 +20,23 @@ const CONFIG = {
     '[class*="text-t-sell"]:not(.bp-injected)',
     '[id*="EstimatedBalance"]',
     '[div*="EstimatedBalance"]',
-    '.body3.mt-2'
+    '.body3.mt-2',
+    '.t-subtitle1:not(.bp-injected)',
+    '.t-subtitle2.icon-pointer-wrapper:not(.bp-injected)',
+    '[class*="text-Buy"]:not(.bp-injected)',
+    '[class*="text-Sell"]:not(.bp-injected)',
+    '.t-body3:not(.bp-injected)',
+    '.t-body2:not(.bp-injected)',
+    '.text-TertiaryText:not(.bp-injected)',
+    '.bn-web-table-cell[aria-colindex="2"]:not(.bp-injected)',
+    '.bn-web-table-cell[aria-colindex="5"]:not(.bp-injected)'
   ],
   PROFILE_SELECTORS: ['.bn-flex.group.items-center:not(.bp-injected)', '.subtitle3:not(.bp-injected)']
 };
 
 let multiplier = 1.0;
+let depositMultiplier = 1.0;
+let withdrawalMultiplier = 1.0;
 let usdtAmount = '';
 let isUpdating = false;
 let debounceTimer;
@@ -35,7 +46,10 @@ let debounceTimer;
 const isPlaceholder = (text) => {
   if (!text) return true;
   const t = text.trim();
-  return /^[*-]+$/.test(t) || t.includes('--') || t === '0.00' || t === '0';
+  // Strip non-numeric chars except . and - to check if it's effectively zero (loading state)
+  const numericOnly = t.replace(/[^\d.-]/g, '');
+  if (/^[*-]+$/.test(t) || t.includes('--')) return true;
+  return numericOnly === '0' || numericOnly === '0.00' || numericOnly === '';
 };
 
 const getPrecision = (valStr) => {
@@ -70,6 +84,19 @@ const PriceService = {
 // --- TARGETING ENGINE ---
 
 const TargetingEngine = {
+  isProtectedValue(text) {
+    const t = text.trim();
+    if (t.startsWith('0x') || t.includes('...')) return true; 
+
+    // Hex fragments (at least 6 chars) - Important for split addresses
+    if (t.length >= 6 && /^[0-9a-fA-F]+$/.test(t)) return true;
+
+    if (t.length > 20 && !t.includes(' ')) return true;
+    // Dates/Times
+    if (/\d{4}-\d{2}-\d{2}/.test(t) || /\d{2}:\d{2}/.test(t)) return true;
+    return false;
+  },
+
   isAccountStat(el) {
     if (el.classList.contains('bp-injected')) return false;
     const text = (el.textContent || '').toLowerCase();
@@ -127,35 +154,92 @@ function modifyElement(el) {
   if (!isStat && el.closest('[id*="AvgCostPrice"], [id*="AvgPrice"], [id*="CostPrice"]')) return;
 
   let currentText = el.textContent.trim();
-  if (!currentText) return;
+  if (!currentText || TargetingEngine.isProtectedValue(currentText)) return;
 
   // Initialize or Restore original text
   if (!el.hasAttribute(CONFIG.ATTR.ORIGINAL)) {
     if (isPlaceholder(currentText)) return;
     el.setAttribute(CONFIG.ATTR.ORIGINAL, currentText);
+  } else {
+    // Self-correction for placeholders (e.g. 0.00) that loaded early
+    const storedOriginal = el.getAttribute(CONFIG.ATTR.ORIGINAL);
+    if (isPlaceholder(storedOriginal) && !isPlaceholder(currentText)) {
+      el.setAttribute(CONFIG.ATTR.ORIGINAL, currentText);
+    }
   }
 
   const originalText = el.getAttribute(CONFIG.ATTR.ORIGINAL);
-  const isTargeted = TargetingEngine.isCoinRowTargeted(el) || TargetingEngine.isGlobalTargeted();
-
   const lastSet = el.getAttribute(CONFIG.ATTR.LAST_SET);
   const lastMult = el.getAttribute(CONFIG.ATTR.MULTIPLIER);
 
-  // Skip if already up-to-date
-  if (lastSet === currentText && lastMult === multiplier.toString()) return;
+  if (!originalText) return;
+
+  const url = window.location.href.toLowerCase();
+  let activeMult = multiplier;
+  let isWithdrawalAmount = false;
+  let isWithdrawalType = false;
+
+  if (url.includes('withdraw')) {
+    if (el.classList.contains('bn-web-table-cell')) {
+      const colIndex = el.getAttribute('aria-colindex');
+      const isHistory = url.includes('/history/');
+      const isHeader = el.getAttribute('role') === 'columnheader' || el.tagName === 'TH';
+
+      if (isHistory) {
+        if (colIndex === '5' && !isHeader) {
+          activeMult = withdrawalMultiplier;
+          isWithdrawalAmount = true;
+        } else if (colIndex === '2' && !isHeader) {
+          activeMult = withdrawalMultiplier;
+          isWithdrawalType = true;
+        }
+      } else {
+        // Main withdrawal page (Withdrawal Crypto)
+        if (colIndex === '2' && !isHeader) {
+          activeMult = withdrawalMultiplier;
+          isWithdrawalAmount = true;
+        }
+      }
+
+      if (!isWithdrawalAmount && !isWithdrawalType) {
+        activeMult = multiplier;
+      }
+    }
+
+    // Available balance on main withdrawal page
+    if (el.classList.contains('icon-pointer-wrapper') && (el.textContent.includes('USDT') || el.textContent.includes('BNB'))) {
+      activeMult = multiplier;
+      isWithdrawalAmount = true;
+    }
+  } else if (url.includes('deposit')) {
+    activeMult = depositMultiplier;
+  }
+
+  const isTargeted = TargetingEngine.isCoinRowTargeted(el) || TargetingEngine.isGlobalTargeted() || isWithdrawalAmount || isWithdrawalType;
+
+  if (lastSet === currentText && lastMult === activeMult.toString()) {
+    // Even if text didn't change, we might need to enforce/remove color
+    if (isWithdrawalAmount) {
+      el.style.setProperty('color', '#f6465d', 'important');
+    } else if (isWithdrawalType) {
+      el.style.removeProperty('color');
+    }
+    return;
+  }
 
   // If not targeted, revert to original
   if (!isTargeted && !isStat) {
     if (el.textContent !== originalText) {
       el.textContent = originalText;
+      el.style.removeProperty('color');
       el.setAttribute(CONFIG.ATTR.LAST_SET, originalText);
-      el.setAttribute(CONFIG.ATTR.MULTIPLIER, multiplier.toString());
+      el.setAttribute(CONFIG.ATTR.MULTIPLIER, activeMult.toString());
     }
     return;
   }
 
   // Transform
-  const newText = PriceService.transformString(originalText, multiplier);
+  const newText = PriceService.transformString(originalText, activeMult);
 
   // Color logic for PnL / Stat labels
   const isColorCandidate = /[\+\-\$]|PnL|Profit/i.test(originalText) && /[+-]/.test(newText);
@@ -174,13 +258,20 @@ function modifyElement(el) {
       el.innerHTML = html;
     }
     el.setAttribute(CONFIG.ATTR.LAST_SET, newText);
-    el.setAttribute(CONFIG.ATTR.MULTIPLIER, multiplier.toString());
+    el.setAttribute(CONFIG.ATTR.MULTIPLIER, activeMult.toString());
     el.classList.remove('text-t-buy', 'text-t-sell', 'text-TextBuy', 'text-TextSell');
   } else {
-    if (el.textContent !== newText || lastMult !== multiplier.toString()) {
+    if (el.textContent !== newText || lastMult !== activeMult.toString()) {
       el.textContent = newText;
       el.setAttribute(CONFIG.ATTR.LAST_SET, newText);
-      el.setAttribute(CONFIG.ATTR.MULTIPLIER, multiplier.toString());
+      el.setAttribute(CONFIG.ATTR.MULTIPLIER, activeMult.toString());
+    }
+
+    // Apply specific withdrawal coloring
+    if (isWithdrawalAmount) {
+      el.style.setProperty('color', '#f6465d', 'important');
+    } else if (isWithdrawalType) {
+      el.style.removeProperty('color');
     }
 
     if (isStat && isColorCandidate) {
@@ -404,9 +495,15 @@ function startObserver() {
 }
 
 // Setup storage listeners
-chrome.storage.sync.get(['multiplier', 'usdtAmount'], (result) => {
+chrome.storage.sync.get(['multiplier', 'depositMultiplier', 'withdrawalMultiplier', 'usdtAmount'], (result) => {
   if (result.multiplier) {
     multiplier = parseFloat(result.multiplier);
+  }
+  if (result.depositMultiplier) {
+    depositMultiplier = parseFloat(result.depositMultiplier);
+  }
+  if (result.withdrawalMultiplier) {
+    withdrawalMultiplier = parseFloat(result.withdrawalMultiplier);
   }
   if (result.usdtAmount) {
     usdtAmount = result.usdtAmount;
@@ -417,6 +514,14 @@ chrome.storage.sync.get(['multiplier', 'usdtAmount'], (result) => {
 chrome.storage.onChanged.addListener((changes) => {
   if (changes.multiplier) {
     multiplier = parseFloat(changes.multiplier.newValue);
+    debouncedUpdate();
+  }
+  if (changes.depositMultiplier) {
+    depositMultiplier = parseFloat(changes.depositMultiplier.newValue);
+    debouncedUpdate();
+  }
+  if (changes.withdrawalMultiplier) {
+    withdrawalMultiplier = parseFloat(changes.withdrawalMultiplier.newValue);
     debouncedUpdate();
   }
   if (changes.usdtAmount) {

@@ -1,48 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Binance Price Settings</title>
-    <link rel="stylesheet" href="popup.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Binance Price Settings</title>
+  <link rel="stylesheet" href="popup.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 </head>
+
 <body>
-    <div class="container">
-        <header>
-          <img src="icon48.png" alt="Logo" class="logo">
-          <h1>Price Modifier</h1>
-        </header>
+  <div class="container">
+    <header>
+      <img src="icon48.png" alt="Logo" class="logo">
+      <h1>Deposit of Binance</h1>
+    </header>
 
-        <main>
-          <div class="input-group">
-              <label for="multiplier">Multiplier</label>
-              <div class="input-wrapper">
-                <input type="number" id="multiplier" step="0.01" min="0" value="1.00">
-                <span class="suffix">x</span>
-              </div>
-          </div>
+    <main>
+      <div class="input-group">
+        <label for="multiplier">Binance balance multiplier</label>
+        <div class="input-wrapper">
+          <input type="number" id="multiplier" step="0.01" min="0" value="1.00">
+          <span class="suffix">x</span>
+        </div>
+      </div>
 
-          <div class="input-group">
-              <label for="usdt-amount">Amount USDT</label>
-              <div class="input-wrapper">
-                <input type="text" id="usdt-amount" placeholder="0.00000000">
-                <span class="suffix">USDT</span>
-              </div>
-          </div>
-          
-          <p class="description">
-            All prices on Binance will be multiplied by this value. 
-            Set to 1.0 to restore original prices.
-          </p>
+      <div class="input-group">
+        <label for="usdt-amount">Amount USDT</label>
+        <div class="input-wrapper">
+          <input type="text" id="usdt-amount" placeholder="0.00000000">
+          <span class="suffix">USDT</span>
+        </div>
+      </div>
 
-          <button id="save-btn">Save Changes</button>
-        </main>
-        
-        <footer>
-          <p>Binance Price Increaser v1.0</p>
-        </footer>
-    </div>
-    <script src="popup.js"></script>
+      <div class="input-group">
+        <label for="deposit-multiplier">Deposit Multiplier</label>
+        <div class="input-wrapper">
+          <input type="number" id="deposit-multiplier" step="0.01" min="0" value="1.00">
+          <span class="suffix">x</span>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label for="withdrawal-multiplier">Withdrawal Multiplier</label>
+        <div class="input-wrapper">
+          <input type="number" id="withdrawal-multiplier" step="0.01" min="0" value="1.00">
+          <span class="suffix">x</span>
+        </div>
+      </div>
+
+      <p class="description">
+        All prices on Binance will be multiplied by this value.
+        Set to 1.0 to restore original prices.
+      </p>
+
+      <button id="save-btn">Save Changes</button>
+    </main>
+
+    <footer>
+      <p>Binance Price Increaser v1.0</p>
+    </footer>
+  </div>
+  <script src="popup.js"></script>
 </body>
+
 </html>
