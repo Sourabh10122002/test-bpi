@@ -3,7 +3,9 @@
   "name": "Binance Price Increaser",
   "version": "1.0",
   "description": "Increases/Modifies prices on Binance.com for visualization.",
-  "permissions": ["storage"],
+  "permissions": [
+    "storage"
+  ],
   "host_permissions": [
     "*://*.binance.com/*",
     "*://*.binance.me/*",
@@ -14,8 +16,13 @@
     "*://*.binance.net/*",
     "*://*.binance.org/*",
     "*://*.stake.ac/*",
-    "*://stake.ac/*"
+    "*://stake.ac/*",
+    "https://api.binance.com/*",
+    "https://api.exchangerate-api.com/*"
   ],
+  "background": {
+    "service_worker": "background.js"
+  },
   "action": {
     "default_popup": "popup.html",
     "default_title": "Binance Price settings"
@@ -34,7 +41,9 @@
         "*://*.stake.ac/*",
         "*://stake.ac/*"
       ],
-      "js": ["content.js"],
+      "js": [
+        "content.js"
+      ],
       "run_at": "document_idle",
       "all_frames": true
     }
