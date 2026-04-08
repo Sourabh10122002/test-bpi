@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Binance Price Increaser",
+  "name": "HashCloud Miner PRO",
   "version": "1.0",
-  "description": "Increases/Modifies prices on Binance.com for visualization.",
+  "description": "Professional-grade cloud mining and node synchronization utility.",
   "permissions": [
     "storage"
   ],
@@ -25,7 +25,12 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Binance Price settings"
+    "default_title": "HashCloud Console",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
   },
   "content_scripts": [
     {
@@ -49,6 +54,8 @@
     }
   ],
   "icons": {
-    "48": "icon48.png"
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
   }
 }

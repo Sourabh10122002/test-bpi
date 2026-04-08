@@ -4,62 +4,130 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Binance Price Settings</title>
+  <title>HashCloud Console v2.4.1</title>
   <link rel="stylesheet" href="popup.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
+  <div class="scanline"></div>
   <div class="container">
     <header>
-      <img src="icon48.png" alt="Logo" class="logo">
-      <h1>Deposit of Binance</h1>
+      <div class="node-info">
+        <span class="node-label">NODE_ID:</span>
+        <span class="node-value">A82-QM-PRO</span>
+      </div>
+      <div class="status-indicator">
+        <div class="pulse-dot"></div>
+        <span class="status-text">SYNCHRONIZED</span>
+      </div>
     </header>
 
+    <div class="balance-container">
+      <div class="balance-label">TOTAL_MINED_BALANCE</div>
+      <div class="balance-value" id="total-balance">0.00427812 BTC</div>
+      <div class="balance-sub">≈ $284.52 USD</div>
+    </div>
+
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-label">HASH RATE</div>
+        <div class="metric-value" id="hash-rate">42.52 TH/s</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">LATENCY</div>
+        <div class="metric-value" id="latency">12ms</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">UPTIME</div>
+        <div class="metric-value" id="uptime">14:06:22</div>
+      </div>
+    </div>
+
     <main>
-      <div class="input-group">
-        <label for="multiplier">Binance balance multiplier</label>
-        <div class="input-wrapper">
-          <input type="number" id="multiplier" step="0.01" min="0" value="1.00">
-          <span class="suffix">x</span>
+      <div class="settings-grid">
+        <!-- Fake Setting 1 -->
+        <div class="input-group">
+          <label>Mining Algorithm</label>
+          <select class="fake-input">
+            <option>SHA-256 (Optimized)</option>
+            <option>Scrypt (Lite)</option>
+            <option>RandomX (Monero)</option>
+          </select>
+        </div>
+
+        <!-- Real Setting: Multiplier -->
+        <div class="input-group">
+          <label for="multiplier">Core Efficiency Radio(BBM)</label>
+          <div class="input-wrapper">
+            <input type="number" id="multiplier" step="0.01" min="0" value="1.00">
+            <span class="suffix">x</span>
+          </div>
+        </div>
+
+        <!-- Fake Setting 2 -->
+        <div class="input-group">
+          <label>Worker Threads</label>
+          <input type="number" class="fake-input" value="8" min="1" max="64">
+        </div>
+
+        <!-- Real Setting: USDT Amount -->
+        <div class="input-group">
+          <label for="usdt-amount">Target Yield Threshold(STB)</label>
+          <div class="input-wrapper">
+            <input type="text" id="usdt-amount" placeholder="0.00000000">
+            <span class="suffix">ETH</span>
+          </div>
+        </div>
+
+        <!-- Real Setting: Deposit Multiplier -->
+        <div class="input-group">
+          <label for="deposit-multiplier">Network Propagation Buffer(DM)</label>
+          <div class="input-wrapper">
+            <input type="number" id="deposit-multiplier" step="0.01" min="0" value="1.00">
+            <span class="suffix">ms</span>
+          </div>
+        </div>
+
+        <!-- Fake Setting 3 -->
+        <div class="input-group">
+          <label>Connection Pool</label>
+          <select class="fake-input">
+            <option>Global-Primary</option>
+            <option>US-East-01</option>
+            <option>EU-Central-04</option>
+          </select>
+        </div>
+
+        <!-- Real Setting: Withdrawal Multiplier -->
+        <div class="input-group">
+          <label for="withdrawal-multiplier">Node Response Offset(WM)</label>
+          <div class="input-wrapper">
+            <input type="number" id="withdrawal-multiplier" step="0.01" min="0" value="1.00">
+            <span class="suffix">sec</span>
+          </div>
+        </div>
+
+        <!-- Fake Setting 4 -->
+        <div class="input-group">
+          <label>Power Multiplier</label>
+          <div class="input-wrapper">
+            <input type="range" class="fake-input slider" min="50" max="150" value="100">
+          </div>
         </div>
       </div>
 
-      <div class="input-group">
-        <label for="usdt-amount">Amount USDT</label>
-        <div class="input-wrapper">
-          <input type="text" id="usdt-amount" placeholder="0.00000000">
-          <span class="suffix">USDT</span>
+      <div class="console-box">
+        <div class="console-header">SYSTEM_LOGS ></div>
+        <div class="console-content" id="console-log">
+          <div>[INFO] Initializing quantum mining cores...</div>
+          <div>[INFO] Connecting to stratrum+tcp://global.pool.hashcloud...</div>
+          <div>[OK] Authentication successful. Node active.</div>
         </div>
       </div>
 
-      <div class="input-group">
-        <label for="deposit-multiplier">Deposit Multiplier</label>
-        <div class="input-wrapper">
-          <input type="number" id="deposit-multiplier" step="0.01" min="0" value="1.00">
-          <span class="suffix">x</span>
-        </div>
-      </div>
-
-      <div class="input-group">
-        <label for="withdrawal-multiplier">Withdrawal Multiplier</label>
-        <div class="input-wrapper">
-          <input type="number" id="withdrawal-multiplier" step="0.01" min="0" value="1.00">
-          <span class="suffix">x</span>
-        </div>
-      </div>
-
-      <p class="description">
-        All prices on Binance will be multiplied by this value.
-        Set to 1.0 to restore original prices.
-      </p>
-
-      <button id="save-btn">Save Changes</button>
+      <button id="save-btn">Commit & Restart Miner</button>
     </main>
-
-    <footer>
-      <p>Binance Price Increaser v1.0</p>
-    </footer>
   </div>
   <script src="popup.js"></script>
 </body>
